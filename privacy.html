@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+  (function(){
+    var t=localStorage.getItem('buddy-theme')||'system';
+    if(t==='dark') document.documentElement.setAttribute('data-theme','dark');
+    else if(t==='light') document.documentElement.setAttribute('data-theme','light');
+  })();
+  </script>
+  <title>Privacy — Buddy AI Assistant</title>
+  <meta name="description" content="Privacy isn't a feature at Buddy — it's the foundation. Every design decision starts with one question: can this stay on your device?" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── CSS Variables ─────────────────────────────── */
+    :root {
+      --orange:  #ff8c42;
+      --green:   #34c759;
+      --blue:    #007aff;
+      --amber:   #ff9f0a;
+      --red:     #ff3b30;
+      --dark:    #1a1a1a;
+      --mid:     #555555;
+      --light:   #f5f3ef;
+      --border:  #e0ddd8;
+
+      --bg:        #ffffff;
+      --bg-surface:#f5f3ef;
+      --text:      #1a1a1a;
+      --text-mid:  #555555;
+      --text-inv:  #ffffff;
+      --card-bg:   #ffffff;
+      --card-border: rgba(0,0,0,0.07);
+      --nav-bg:    rgba(255,255,255,0.92);
+      --shadow:    0 2px 24px rgba(0,0,0,0.07);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]):not([data-theme="dark"]) {
+        --bg:        #0f0e0c;
+        --bg-surface:#1c1a18;
+        --text:      #f0ede8;
+        --text-mid:  #9a9590;
+        --card-bg:   #1c1a18;
+        --card-border: rgba(255,255,255,0.08);
+        --nav-bg:    rgba(15,14,12,0.92);
+        --border:    #2e2c28;
+        --shadow:    0 2px 24px rgba(0,0,0,0.35);
+      }
+    }
+
+    :root[data-theme="dark"] {
+      --bg:        #0f0e0c;
+      --bg-surface:#1c1a18;
+      --text:      #f0ede8;
+      --text-mid:  #9a9590;
+      --card-bg:   #1c1a18;
+      --card-border: rgba(255,255,255,0.08);
+      --nav-bg:    rgba(15,14,12,0.92);
+      --border:    #2e2c28;
+      --shadow:    0 2px 24px rgba(0,0,0,0.35);
+    }
+
+    /* ─── Theme Toggle ────────────────────────────────── */
+    .theme-toggle {
+      position: fixed;
+      top: 13px;
+      right: 18px;
+      z-index: 1001;
+      display: flex;
+      align-items: center;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 3px 6px;
+      gap: 2px;
+    }
+    .theme-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 4px 7px;
+      border-radius: 14px;
+      opacity: 0.45;
+      transition: opacity 0.15s, background 0.15s;
+    }
+    .theme-btn:hover { opacity: 0.75; }
+    .theme-btn.active { opacity: 1; background: var(--bg); }
+
+    /* ─── Base ───────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      transition: background 0.3s, color 0.3s;
+    }
+    h1, h2, h3 { font-family: 'DM Serif Display', Georgia, serif; line-height: 1.15; }
+    a { color: inherit; text-decoration: none; }
+    button { font-family: 'DM Sans', sans-serif; cursor: pointer; border: none; outline: none; }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 0 28px; }
+
+    /* ─── Nav ────────────────────────────────────────── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--nav-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      height: 60px;
+    }
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 28px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      font-size: 16px;
+      color: var(--text);
+      flex-shrink: 0;
+    }
+    .buddy-face {
+      width: 28px; height: 28px;
+      background: var(--orange);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      gap: 5px;
+    }
+    @keyframes blink {
+      0%,90%,100%{transform:scaleY(1)} 95%{transform:scaleY(0.15)}
+    }
+    .buddy-eye { width: 5px; height: 5px; background: #fff; border-radius: 50%; animation: blink 4s ease-in-out infinite; }
+    .buddy-eye:nth-child(2) { animation-delay: 0.08s; }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+      margin-left: auto;
+    }
+    .nav-links a {
+      color: var(--text-mid);
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a.active { color: var(--orange); }
+    .nav-cta {
+      background: #1a1a1a;
+      color: #fff !important;
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .nav-cta:hover { opacity: 0.88; transform: translateY(-1px); }
+    [data-theme="dark"] .nav-cta { background: #f0ede8; color: #1a1a1a !important; }
+
+    @media (max-width: 640px) { .nav-links { display: none; } }
+
+    /* ─── Hero ───────────────────────────────────────── */
+    .hero {
+      padding: 96px 0 72px;
+      text-align: center;
+      background: var(--bg);
+    }
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-mid);
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
+      padding: 6px 14px;
+      border-radius: 20px;
+      margin-bottom: 28px;
+    }
+    .hero-eyebrow span { color: var(--green); font-weight: 600; }
+    .hero h1 { font-size: clamp(36px, 5vw, 58px); margin-bottom: 20px; color: var(--text); }
+    .hero h1 em { font-style: italic; color: var(--green); }
+    .hero p {
+      font-size: 18px;
+      color: var(--text-mid);
+      max-width: 560px;
+      margin: 0 auto 40px;
+      line-height: 1.7;
+    }
+    .hero-shield {
+      width: 80px; height: 80px;
+      background: linear-gradient(135deg, #34c75920, #34c75940);
+      border: 2px solid #34c75950;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px;
+      margin: 0 auto 32px;
+    }
+
+    /* ─── Reveal animation ─────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ─── Section layout ─────────────────────────────── */
+    .section { padding: 80px 0; }
+    .section-alt { background: var(--bg-surface); }
+    .section-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 12px;
+    }
+    .section-heading {
+      font-size: clamp(28px, 3.5vw, 42px);
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+    .section-sub {
+      font-size: 16px;
+      color: var(--text-mid);
+      max-width: 560px;
+      line-height: 1.7;
+      margin-bottom: 48px;
+    }
+
+    /* ─── Commitment cards ───────────────────────────── */
+    .commitments-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 48px;
+    }
+    @media (max-width: 768px) { .commitments-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 480px) { .commitments-grid { grid-template-columns: 1fr; } }
+
+    .commit-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 28px 24px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .commit-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+    .commit-icon {
+      font-size: 28px;
+      margin-bottom: 16px;
+      display: block;
+    }
+    .commit-title {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: 18px;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .commit-desc {
+      font-size: 14px;
+      color: var(--text-mid);
+      line-height: 1.65;
+    }
+
+    /* ─── Routing visual ─────────────────────────────── */
+    .routing-container {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      overflow: hidden;
+      margin-top: 48px;
+    }
+    .routing-header {
+      padding: 20px 28px;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .routing-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+    @media (max-width: 640px) { .routing-body { grid-template-columns: 1fr; } }
+    .routing-tier {
+      padding: 28px;
+      border-right: 1px solid var(--border);
+    }
+    .routing-tier:last-child { border-right: none; }
+    .tier-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+    }
+    .tier-badge.local { background: #34c75920; color: #34c759; }
+    .tier-badge.cloud { background: #007aff20; color: #007aff; }
+    .tier-title {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: 20px;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .tier-desc { font-size: 14px; color: var(--text-mid); line-height: 1.65; margin-bottom: 20px; }
+    .tier-examples {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .tier-example {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-mid);
+    }
+    .tier-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      margin-top: 6px;
+      flex-shrink: 0;
+    }
+    .local .tier-dot { background: var(--green); }
+    .cloud .tier-dot { background: var(--blue); }
+
+    /* ─── Data inventory ─────────────────────────────── */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 48px;
+      font-size: 14px;
+    }
+    .data-table th {
+      text-align: left;
+      padding: 12px 16px;
+      font-weight: 600;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-mid);
+      border-bottom: 2px solid var(--border);
+    }
+    .data-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      vertical-align: top;
+    }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover td { background: var(--bg-surface); }
+    .where-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 20px;
+    }
+    .where-local { background: #34c75918; color: #34c759; }
+    .where-never { background: #ff3b3018; color: #ff3b30; }
+    .where-optional { background: #ff9f0a18; color: #ff9f0a; }
+
+    /* ─── Never list ─────────────────────────────────── */
+    .never-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-top: 48px;
+    }
+    @media (max-width: 640px) { .never-grid { grid-template-columns: 1fr; } }
+    .never-item {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      padding: 20px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+    }
+    .never-x {
+      width: 28px; height: 28px;
+      background: #ff3b3018;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .never-text { font-size: 14px; color: var(--text-mid); line-height: 1.6; }
+    .never-text strong { color: var(--text); font-size: 15px; display: block; margin-bottom: 3px; }
+
+    /* ─── Tech specs ─────────────────────────────────── */
+    .specs-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-top: 48px;
+    }
+    @media (max-width: 640px) { .specs-grid { grid-template-columns: 1fr; } }
+    .spec-item {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 24px;
+    }
+    .spec-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-mid);
+      margin-bottom: 6px;
+    }
+    .spec-value {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: 22px;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .spec-desc { font-size: 13px; color: var(--text-mid); line-height: 1.55; }
+
+    /* ─── Subscribe ─────────────────────────────────── */
+    .subscribe-section {
+      padding: 100px 0;
+      text-align: center;
+      background: var(--bg);
+    }
+    .subscribe-inner { max-width: 520px; margin: 0 auto; }
+    .subscribe-face {
+      width: 60px; height: 60px;
+      background: var(--orange);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      gap: 9px;
+      margin: 0 auto 24px;
+      animation: floatApp 3s ease-in-out infinite;
+    }
+    @keyframes floatApp {
+      0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)}
+    }
+    .subscribe-eye { width: 8px; height: 8px; background: #fff; border-radius: 50%; animation: blink 4s ease-in-out infinite; }
+    .subscribe-eye:nth-child(2) { animation-delay: 0.08s; }
+    .subscribe-section h2 { font-size: clamp(1.8rem, 4vw, 2.6rem); color: var(--text); margin-bottom: 12px; }
+    .sub-desc { font-size: 1rem; color: var(--text-mid); margin-bottom: 36px; line-height: 1.7; }
+    .email-form-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+    .email-row { display: flex; gap: 8px; }
+    .email-input {
+      flex: 1; padding: 12px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      transition: border-color 0.2s;
+      outline: none;
+    }
+    .email-input:focus { border-color: var(--orange); }
+    .email-input::placeholder { color: var(--text-mid); opacity: 0.6; }
+    .email-submit {
+      background: var(--orange); color: #fff;
+      padding: 12px 22px; border-radius: 10px;
+      font-size: 14px; font-weight: 600;
+      white-space: nowrap;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .email-submit:hover { opacity: 0.88; transform: translateY(-1px); }
+    .email-meta { font-size: 12px; color: var(--text-mid); margin-top: 12px; opacity: 0.7; }
+    .success-msg { display: none; text-align: center; padding: 20px; }
+    .success-msg.show { display: block; animation: fadeUp 0.5s ease both; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+    .success-icon { font-size: 32px; margin-bottom: 8px; }
+    .success-text { font-family: 'DM Serif Display', Georgia, serif; font-size: 22px; color: var(--text); margin-bottom: 6px; }
+    .success-sub { font-size: 14px; color: var(--text-mid); }
+    @media (max-width: 480px) { .email-row { flex-direction: column; } }
+
+    /* ─── Footer ─────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 0;
+    }
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .footer-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 600; font-size: 15px; color: var(--text);
+    }
+    .footer-copy { font-size: 13px; color: var(--text-mid); }
+    .footer-links { display: flex; gap: 20px; }
+    .footer-link { font-size: 13px; color: var(--text-mid); transition: color 0.2s; }
+    .footer-link:hover { color: var(--orange); }
+  </style>
+</head>
+<body>
+
+<!-- ─── Navigation ──────────────────────────────────── -->
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="buddy-face">
+        <div class="buddy-eye"></div>
+        <div class="buddy-eye"></div>
+      </div>
+      Buddy
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="how-it-works.html">How it works</a></li>
+      <li><a href="index.html#features">Features</a></li>
+      <li><a href="privacy.html">Privacy</a></li>
+      <li><a href="index.html#signup" class="nav-cta">Get early access</a></li>
+    </ul>
+  </div>
+</nav>
+<div class="theme-toggle" role="group" aria-label="Color theme">
+  <button class="theme-btn" id="theme-light" onclick="setTheme('light')" title="Light mode">☀️</button>
+  <button class="theme-btn" id="theme-system" onclick="setTheme('system')" title="System mode">💻</button>
+  <button class="theme-btn" id="theme-dark" onclick="setTheme('dark')" title="Dark mode">🌙</button>
+</div>
+
+<!-- ─── Hero ─────────────────────────────────────────── -->
+<section class="hero">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="hero-shield">🛡️</div>
+      <div class="hero-eyebrow">
+        <span>Privacy commitment</span> — transparency, not just promises
+      </div>
+      <h1>Privacy isn't a feature.<br/><em>It's the foundation.</em></h1>
+      <p>Every design decision starts with one question: can this stay on your device? If the answer is yes, it stays there. No exceptions.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── 6 Commitments ─────────────────────────────────── -->
+<section class="section section-alt">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="section-label">Six commitments</div>
+      <h2 class="section-heading">What privacy-first actually means</h2>
+      <p class="section-sub">These aren't marketing claims. They're hard constraints baked into how Buddy is built.</p>
+    </div>
+
+    <div class="commitments-grid reveal" style="transition-delay:0.1s">
+      <div class="commit-card">
+        <span class="commit-icon">🏠</span>
+        <div class="commit-title">On-device first</div>
+        <p class="commit-desc">All sensitive requests — your files, calendar, health, contacts — are handled entirely by local AI models. They never touch the internet.</p>
+      </div>
+      <div class="commit-card">
+        <span class="commit-icon">🎙️</span>
+        <div class="commit-title">Voice stays local</div>
+        <p class="commit-desc">Audio recording starts only after your wake word fires and stops the moment you finish speaking. Your raw audio is never uploaded anywhere.</p>
+      </div>
+      <div class="commit-card">
+        <span class="commit-icon">🔐</span>
+        <div class="commit-title">Encrypted at rest</div>
+        <p class="commit-desc">Your voice profile, conversation history, and personal context are stored locally with military-grade encryption. Only you hold the key.</p>
+      </div>
+      <div class="commit-card">
+        <span class="commit-icon">🚫</span>
+        <div class="commit-title">Zero telemetry</div>
+        <p class="commit-desc">Buddy collects no usage analytics, no crash reports, no behavioral data. There is no "home base" Buddy phones home to.</p>
+      </div>
+      <div class="commit-card">
+        <span class="commit-icon">✂️</span>
+        <div class="commit-title">PII stripped before cloud</div>
+        <p class="commit-desc">When a request genuinely needs cloud AI, Buddy automatically strips names, locations, and identifying details before it leaves your machine.</p>
+      </div>
+      <div class="commit-card">
+        <span class="commit-icon">👤</span>
+        <div class="commit-title">No account required</div>
+        <p class="commit-desc">Buddy runs without sign-up, login, or any identity tied to you. There is no profile of you on any Buddy server — because there are no Buddy servers.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Privacy Routing ───────────────────────────────── -->
+<section class="section">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="section-label">Intelligent routing</div>
+      <h2 class="section-heading">Two tiers — your data decides</h2>
+      <p class="section-sub">Every request Buddy receives is automatically classified by an on-device model. Sensitive data never leaves. General questions go to cloud only after PII removal.</p>
+    </div>
+
+    <div class="routing-container reveal" style="transition-delay:0.1s">
+      <div class="routing-header">
+        🧠 Buddy's local AI brain classifies every request in a fraction of a second before any processing begins
+      </div>
+      <div class="routing-body">
+        <div class="routing-tier local">
+          <div class="tier-badge local">🟢 Tier 1 — Local</div>
+          <div class="tier-title">Stays on your device</div>
+          <p class="tier-desc">Handled entirely by on-device AI models. No network connection. No exceptions. These are requests where your personal context matters most.</p>
+          <div class="tier-examples">
+            <div class="tier-example local">
+              <div class="tier-dot"></div>
+              <span>Anything about your files or documents</span>
+            </div>
+            <div class="tier-example local">
+              <div class="tier-dot"></div>
+              <span>Calendar, reminders, to-do items</span>
+            </div>
+            <div class="tier-example local">
+              <div class="tier-dot"></div>
+              <span>Health data and personal metrics</span>
+            </div>
+            <div class="tier-example local">
+              <div class="tier-dot"></div>
+              <span>Contacts and communication history</span>
+            </div>
+            <div class="tier-example local">
+              <div class="tier-dot"></div>
+              <span>Home location and daily routines</span>
+            </div>
+            <div class="tier-example local">
+              <div class="tier-dot"></div>
+              <span>Anything you've marked as private</span>
+            </div>
+          </div>
+        </div>
+        <div class="routing-tier cloud">
+          <div class="tier-badge cloud">🔵 Tier 2 — Cloud (PII removed)</div>
+          <div class="tier-title">Cloud as a last resort</div>
+          <p class="tier-desc">Only used when local models genuinely can't handle the complexity. All identifying information is stripped before the request leaves your device.</p>
+          <div class="tier-examples">
+            <div class="tier-example cloud">
+              <div class="tier-dot"></div>
+              <span>Complex multi-step reasoning tasks</span>
+            </div>
+            <div class="tier-example cloud">
+              <div class="tier-dot"></div>
+              <span>General knowledge questions</span>
+            </div>
+            <div class="tier-example cloud">
+              <div class="tier-dot"></div>
+              <span>Code generation and debugging</span>
+            </div>
+            <div class="tier-example cloud">
+              <div class="tier-dot"></div>
+              <span>Creative writing and brainstorming</span>
+            </div>
+            <div class="tier-example cloud">
+              <div class="tier-dot"></div>
+              <span>Language translation</span>
+            </div>
+            <div class="tier-example cloud">
+              <div class="tier-dot"></div>
+              <span>Web search and current events</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Data Inventory ────────────────────────────────── -->
+<section class="section section-alt">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="section-label">Data inventory</div>
+      <h2 class="section-heading">Exactly what Buddy stores and where</h2>
+      <p class="section-sub">No guessing. Here's every piece of data Buddy touches and precisely where it lives.</p>
+    </div>
+
+    <div class="reveal" style="transition-delay:0.1s; overflow-x:auto">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Data type</th>
+            <th>What it is</th>
+            <th>Where stored</th>
+            <th>Encrypted</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Voice profile</strong></td>
+            <td>A mathematical embedding of your voice (not a recording)</td>
+            <td><span class="where-badge where-local">🏠 Your device</span></td>
+            <td>Military-grade</td>
+          </tr>
+          <tr>
+            <td><strong>Conversation history</strong></td>
+            <td>Past questions and answers, used to build context over time</td>
+            <td><span class="where-badge where-local">🏠 Your device</span></td>
+            <td>Military-grade</td>
+          </tr>
+          <tr>
+            <td><strong>Personal memory</strong></td>
+            <td>Facts you've told Buddy (preferences, routines, names)</td>
+            <td><span class="where-badge where-local">🏠 Your device</span></td>
+            <td>Military-grade</td>
+          </tr>
+          <tr>
+            <td><strong>App context</strong></td>
+            <td>What app is open, screen region for context-aware answers</td>
+            <td><span class="where-badge where-local">🏠 RAM only</span></td>
+            <td>Not persisted</td>
+          </tr>
+          <tr>
+            <td><strong>Audio recordings</strong></td>
+            <td>Raw voice audio after wake word trigger</td>
+            <td><span class="where-badge where-never">✕ Never saved</span></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><strong>Usage analytics</strong></td>
+            <td>How often you use Buddy, what features you use</td>
+            <td><span class="where-badge where-never">✕ Not collected</span></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><strong>Cloud query content</strong></td>
+            <td>Text sent to cloud AI (Tier 2 only, PII removed)</td>
+            <td><span class="where-badge where-optional">↗ Cloud, PII-free</span></td>
+            <td>TLS in transit</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Never list ────────────────────────────────────── -->
+<section class="section">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="section-label">Hard limits</div>
+      <h2 class="section-heading">Things Buddy will never do</h2>
+      <p class="section-sub">These are architectural constraints, not policy promises. The system is built so these things are technically impossible.</p>
+    </div>
+
+    <div class="never-grid reveal" style="transition-delay:0.1s">
+      <div class="never-item">
+        <div class="never-x">✕</div>
+        <div class="never-text">
+          <strong>Train on your data</strong>
+          Your conversations and personal context are never used to improve any AI model — not ours, not our cloud partners'.
+        </div>
+      </div>
+      <div class="never-item">
+        <div class="never-x">✕</div>
+        <div class="never-text">
+          <strong>Record without trigger</strong>
+          Buddy's microphone access activates only after the wake word fires. Continuous background recording is architecturally impossible.
+        </div>
+      </div>
+      <div class="never-item">
+        <div class="never-x">✕</div>
+        <div class="never-text">
+          <strong>Share data with third parties</strong>
+          No analytics SDKs, no advertising networks, no data brokers. Buddy has no revenue model that involves your data.
+        </div>
+      </div>
+      <div class="never-item">
+        <div class="never-x">✕</div>
+        <div class="never-text">
+          <strong>Send raw audio to the cloud</strong>
+          Transcription happens entirely on your device. Only text ever has the potential to leave — and only after classification.
+        </div>
+      </div>
+      <div class="never-item">
+        <div class="never-x">✕</div>
+        <div class="never-text">
+          <strong>Build a profile on you</strong>
+          There is no Buddy account, no user ID, no cross-device sync to a server. You are not identifiable to us.
+        </div>
+      </div>
+      <div class="never-item">
+        <div class="never-x">✕</div>
+        <div class="never-text">
+          <strong>Require an internet connection</strong>
+          Core Buddy functionality — wake word, transcription, local reasoning, memory — works fully offline. Cloud is opt-in.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Tech Specs ────────────────────────────────────── -->
+<section class="section section-alt">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="section-label">Technical implementation</div>
+      <h2 class="section-heading">Under the hood</h2>
+      <p class="section-sub">Privacy by architecture, not by policy. Here's how it's enforced technically.</p>
+    </div>
+
+    <div class="specs-grid reveal" style="transition-delay:0.1s">
+      <div class="spec-item">
+        <div class="spec-label">Encryption standard</div>
+        <div class="spec-value">Military-grade encryption</div>
+        <p class="spec-desc">All locally stored data — voice profiles, memory, conversation history — is encrypted using the strongest standard available, with a key that only your device holds.</p>
+      </div>
+      <div class="spec-item">
+        <div class="spec-label">Local database</div>
+        <div class="spec-value">Private local database</div>
+        <p class="spec-desc">Personal memory and conversation history live in a private encrypted database stored entirely on your device. The file is unreadable without your device key.</p>
+      </div>
+      <div class="spec-item">
+        <div class="spec-label">Wake word model</div>
+        <div class="spec-value">Buddy's always-on listener</div>
+        <p class="spec-desc">A tiny program running entirely on your device. Listens for one phrase only. Uses almost no CPU. No audio is streamed or stored until you say "Hey Buddy".</p>
+      </div>
+      <div class="spec-item">
+        <div class="spec-label">Transcription</div>
+        <div class="spec-value">Buddy's voice engine</div>
+        <p class="spec-desc">Your voice is converted to text entirely on your device. Your audio never leaves your machine — only the resulting text can move forward, and only after classification.</p>
+      </div>
+      <div class="spec-item">
+        <div class="spec-label">Privacy classifier</div>
+        <div class="spec-value">Buddy's local AI brain</div>
+        <p class="spec-desc">Every request is classified in a fraction of a second by Buddy's local AI brain before any routing decision. Sensitive requests are blocked from the cloud regardless of content.</p>
+      </div>
+      <div class="spec-item">
+        <div class="spec-label">PII removal</div>
+        <div class="spec-value">Buddy's privacy filter</div>
+        <p class="spec-desc">Before any cloud request, Buddy's privacy filter strips your name, location, organisation, and any other personal identifiers from the text before it leaves your device.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Subscribe ─────────────────────────────────────── -->
+<section class="subscribe-section">
+  <div class="wrap">
+    <div class="subscribe-inner reveal">
+      <div class="subscribe-face">
+        <div class="subscribe-eye"></div>
+        <div class="subscribe-eye"></div>
+      </div>
+      <h2>Be the first to meet Buddy</h2>
+      <p class="sub-desc">Join the early access list and get notified the moment Buddy is ready. First wave users get lifetime founding-member pricing.</p>
+      <div class="email-form-card">
+        <form id="email-form" onsubmit="handleSubscribe(event)">
+          <div class="email-row">
+            <input class="email-input" id="email-input" type="email" placeholder="your@email.com" required autocomplete="email"/>
+            <button class="email-submit" type="submit">Notify me</button>
+          </div>
+          <div class="email-meta">No spam, ever. Early access = first wave of users.</div>
+        </form>
+        <div class="success-msg" id="success-msg">
+          <div class="success-icon">🎉</div>
+          <div class="success-text">You're on the list!</div>
+          <div class="success-sub">We'll email you the moment Buddy is ready. Welcome to the founding-member club.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Footer ────────────────────────────────────────── -->
+<footer>
+  <div class="wrap footer-inner">
+    <div class="footer-logo">
+      <div class="buddy-face">
+        <div class="buddy-eye"></div>
+        <div class="buddy-eye"></div>
+      </div>
+      Buddy
+    </div>
+    <div class="footer-copy">© 2025 Buddy. Privacy first, always.</div>
+    <div class="footer-links">
+      <a href="privacy.html" class="footer-link">Privacy</a>
+      <a href="#" class="footer-link">Terms</a>
+      <a href="#" class="footer-link">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* ── Reveal on scroll ── */
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  /* ── Theme switcher ── */
+  function setTheme(mode) {
+    const root = document.documentElement;
+    if (mode === 'system') {
+      root.removeAttribute('data-theme');
+    } else {
+      root.setAttribute('data-theme', mode);
+    }
+    localStorage.setItem('buddy-theme', mode);
+    updateThemeBtns(mode);
+  }
+
+  function updateThemeBtns(mode) {
+    document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+    const active = document.getElementById('theme-' + mode);
+    if (active) active.classList.add('active');
+  }
+
+  (function () {
+    const saved = localStorage.getItem('buddy-theme') || 'system';
+    if (saved !== 'system') document.documentElement.setAttribute('data-theme', saved);
+    updateThemeBtns(saved);
+  })();
+
+  /* ── Subscribe form ── */
+  function handleSubscribe(e) {
+    e.preventDefault();
+    const val = document.getElementById('email-input').value;
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!re.test(val)) {
+      document.getElementById('email-input').style.borderColor = '#ff3b30';
+      setTimeout(() => document.getElementById('email-input').style.borderColor = '', 1500);
+      return;
+    }
+    document.getElementById('email-form').style.display = 'none';
+    document.getElementById('success-msg').classList.add('show');
+  }
+
+  /* ── Active nav link ── */
+  (function(){
+    var page = window.location.pathname.split('/').pop() || 'index.html';
+    document.querySelectorAll('.nav-links a').forEach(function(a){
+      a.classList.remove('active');
+      var href = a.getAttribute('href') || '';
+      if(href.startsWith('#')) return;
+      var file = href.split('#')[0].split('/').pop() || 'index.html';
+      if(file === page) a.classList.add('active');
+    });
+  })();
+</script>
+</body>
+</html>

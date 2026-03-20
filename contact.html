@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<!-- Flash-free theme: runs sync before any render -->
+<script>
+(function(){
+  var t=localStorage.getItem('buddy-theme')||'system';
+  if(t==='dark') document.documentElement.setAttribute('data-theme','dark');
+  else if(t==='light') document.documentElement.setAttribute('data-theme','light');
+})();
+</script>
+<title>Contact Buddy — Get in Touch</title>
+<meta name="description" content="Have a question about Buddy? Want to partner with us? We'd love to hear from you. Reach out via email, phone, or our contact form."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="styles.css"/>
+<style>
+/* ── Contact-page hero ────────────────────────────── */
+#contact-hero{
+  padding:120px 0 80px;
+  text-align:center;
+  background:var(--page-bg);
+  position:relative;overflow:hidden;
+}
+#contact-hero::before{
+  content:'';position:absolute;top:-40%;left:50%;transform:translateX(-50%);
+  width:800px;height:600px;border-radius:50%;
+  background:radial-gradient(ellipse at center,rgba(255,140,66,.08) 0%,transparent 70%);
+  pointer-events:none;
+}
+.contact-hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--bg);border:.5px solid var(--border);
+  border-radius:100px;padding:5px 16px;
+  font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--orange);margin-bottom:24px;
+}
+.contact-hero-badge-dot{
+  width:6px;height:6px;border-radius:50%;background:var(--orange);
+  animation:dotPulse 1.4s ease-in-out infinite;
+}
+#contact-hero h1{
+  font-size:clamp(32px,5vw,60px);color:var(--dark);
+  max-width:700px;margin:0 auto 20px;
+}
+#contact-hero h1 em{font-style:italic;color:var(--orange);}
+#contact-hero p{
+  font-size:16px;color:var(--mid);max-width:480px;
+  margin:0 auto;line-height:1.7;
+}
+/* Main contact grid */
+#contact-page{padding:80px 0 120px;}
+.contact-page-grid{
+  display:grid;grid-template-columns:1fr 1.4fr;gap:64px;align-items:start;
+}
+/* Info cards */
+.contact-info-cards{display:flex;flex-direction:column;gap:16px;}
+.contact-info-card{
+  background:var(--bg);border:.5px solid var(--border);
+  border-radius:16px;padding:24px;
+  display:flex;align-items:flex-start;gap:16px;
+  transition:transform .2s,box-shadow .2s;
+}
+.contact-info-card:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.06);}
+.contact-info-icon{
+  width:48px;height:48px;border-radius:14px;
+  background:var(--page-bg);border:.5px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;flex-shrink:0;
+}
+.contact-info-body{}
+.contact-info-label{
+  font-size:11px;font-weight:600;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:5px;
+}
+.contact-info-value{
+  font-size:15px;color:var(--dark);font-weight:500;line-height:1.5;
+}
+.contact-info-value a{color:var(--orange);transition:opacity .15s;}
+.contact-info-value a:hover{opacity:.75;}
+.contact-info-note{font-size:12px;color:var(--muted);margin-top:4px;}
+
+/* FAQ strip */
+.contact-faq{margin-top:40px;}
+.contact-faq-title{
+  font-size:14px;font-weight:600;color:var(--dark);margin-bottom:16px;
+}
+.contact-faq-item{
+  padding:16px 0;border-bottom:.5px solid var(--border);
+}
+.contact-faq-item:first-of-type{border-top:.5px solid var(--border);}
+.contact-faq-q{font-size:13px;font-weight:600;color:var(--dark);margin-bottom:6px;}
+.contact-faq-a{font-size:13px;color:var(--mid);line-height:1.6;}
+
+/* Big form card */
+.contact-big-card{
+  background:var(--bg);border:.5px solid var(--border);
+  border-radius:24px;padding:44px 40px;
+}
+.contact-big-card-title{
+  font-family:'DM Serif Display',Georgia,serif;
+  font-size:clamp(22px,2.5vw,30px);color:var(--dark);margin-bottom:8px;
+}
+.contact-big-card-title em{font-style:italic;color:var(--orange);}
+.contact-big-card-sub{font-size:14px;color:var(--mid);margin-bottom:32px;line-height:1.6;}
+
+/* Social row */
+.contact-page-socials{
+  display:flex;flex-wrap:wrap;gap:10px;margin-top:32px;
+  padding-top:28px;border-top:.5px solid var(--border);
+}
+.contact-page-social{
+  display:flex;align-items:center;gap:8px;
+  padding:9px 18px;border-radius:100px;
+  background:var(--page-bg);border:.5px solid var(--border);
+  font-size:13px;font-weight:500;color:var(--mid);
+  transition:background .15s,border-color .15s,color .15s;
+}
+.contact-page-social:hover{background:var(--orange);border-color:var(--orange);color:#fff;}
+
+/* Dark overrides */
+[data-theme="dark"] #contact-hero{background:var(--page-bg);}
+[data-theme="dark"] #contact-hero h1{color:#f0ede8;}
+[data-theme="dark"] #contact-hero p{color:#9a9590;}
+[data-theme="dark"] .contact-hero-badge{background:#1c1a18;border-color:#2e2c28;}
+[data-theme="dark"] #contact-page{background:var(--page-bg);}
+[data-theme="dark"] .contact-info-card{background:#1c1a18;border-color:#2e2c28;}
+[data-theme="dark"] .contact-info-icon{background:#0f0e0c;border-color:#2e2c28;}
+[data-theme="dark"] .contact-info-value{color:#f0ede8;}
+[data-theme="dark"] .contact-faq-title{color:#f0ede8;}
+[data-theme="dark"] .contact-faq-item{border-color:#2e2c28;}
+[data-theme="dark"] .contact-faq-q{color:#f0ede8;}
+[data-theme="dark"] .contact-faq-a{color:#9a9590;}
+[data-theme="dark"] .contact-big-card{background:#1c1a18;border-color:#2e2c28;}
+[data-theme="dark"] .contact-big-card-title{color:#f0ede8;}
+[data-theme="dark"] .contact-big-card-sub{color:#9a9590;}
+[data-theme="dark"] .contact-page-social{background:#0f0e0c;border-color:#2e2c28;color:#9a9590;}
+[data-theme="dark"] .contact-page-socials{border-color:#2e2c28;}
+
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]):not([data-theme="dark"]) #contact-hero h1{color:#f0ede8;}
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .contact-info-card{background:#1c1a18;border-color:#2e2c28;}
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .contact-info-value{color:#f0ede8;}
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .contact-big-card{background:#1c1a18;border-color:#2e2c28;}
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .contact-big-card-title{color:#f0ede8;}
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .contact-faq-item{border-color:#2e2c28;}
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .contact-faq-q{color:#f0ede8;}
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .contact-faq-a{color:#9a9590;}
+}
+
+@media(max-width:900px){
+  .contact-page-grid{grid-template-columns:1fr;gap:40px;}
+  .contact-big-card{padding:32px 24px;}
+}
+@media(max-width:600px){
+  #contact-hero{padding:100px 0 60px;}
+  .contact-big-card{padding:24px 20px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ── Nav ─────────────────────────────────────────── -->
+<nav id="nav">
+  <div class="wrap nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="buddy-face">
+        <div class="buddy-eye"></div>
+        <div class="buddy-eye"></div>
+      </div>
+      Buddy
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="how-it-works.html">How it works</a></li>
+      <li><a href="index.html#features">Features</a></li>
+      <li><a href="privacy.html">Privacy</a></li>
+      <li><a href="index.html#subscribe">Early access</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="nav-right" style="display:flex;align-items:center;gap:10px;">
+      <a href="#" class="nav-signin-btn" onclick="openAuth('signin');return false;">Sign in</a>
+      <a href="#" class="nav-signup-btn" onclick="openAuth('signup');return false;">Get early access</a>
+    </div>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu" onclick="toggleMobileNav()">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ── Mobile nav ─────────────────────────────────── -->
+<div id="mobile-nav-backdrop" onclick="closeMobileNav()"></div>
+<div id="mobile-nav-drawer">
+  <div class="mobile-nav-header">
+    <div class="mobile-nav-brand">
+      <div class="buddy-face" style="width:22px;height:22px;">
+        <div class="buddy-eye"></div><div class="buddy-eye"></div>
+      </div>
+      Buddy
+    </div>
+    <button class="mobile-nav-close" onclick="closeMobileNav()" aria-label="Close menu">✕</button>
+  </div>
+  <ul class="mobile-nav-links" id="mobile-nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="how-it-works.html">How it works</a></li>
+    <li><a href="index.html#features" onclick="closeMobileNav()">Features</a></li>
+    <li><a href="privacy.html">Privacy</a></li>
+    <li><a href="index.html#subscribe" onclick="closeMobileNav()">Early access</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <div class="mobile-nav-divider"></div>
+  <div class="mobile-nav-actions">
+    <a href="#" class="mobile-nav-signin" onclick="closeMobileNav();openAuth('signin');return false;">Sign in</a>
+    <a href="#" class="mobile-nav-signup" onclick="closeMobileNav();openAuth('signup');return false;">Get early access</a>
+  </div>
+  <div class="mobile-nav-theme">
+    <button id="mobile-theme-light" onclick="setTheme('light')" title="Light">☀️</button>
+    <button id="mobile-theme-system" onclick="setTheme('system')" title="System">💻</button>
+    <button id="mobile-theme-dark" onclick="setTheme('dark')" title="Dark">🌙</button>
+  </div>
+</div>
+<div class="theme-fab" id="theme-fab">
+  <div class="theme-fab-options">
+    <button class="theme-fab-opt" data-theme="light" onclick="setTheme('light');collapseFab()" title="Light mode">☀️</button>
+    <button class="theme-fab-opt" data-theme="system" onclick="setTheme('system');collapseFab()" title="System mode">💻</button>
+    <button class="theme-fab-opt" data-theme="dark" onclick="setTheme('dark');collapseFab()" title="Dark mode">🌙</button>
+  </div>
+  <button class="theme-fab-btn" onclick="toggleThemeFab()" aria-label="Change theme">
+    <span id="theme-fab-icon">💻</span>
+  </button>
+</div>
+
+<!-- ── Hero ────────────────────────────────────────── -->
+<section id="contact-hero">
+  <div class="wrap">
+    <div class="contact-hero-badge">
+      <div class="contact-hero-badge-dot"></div>
+      We're friendly, we promise
+    </div>
+    <h1>Let's <em>talk</em></h1>
+    <p>Whether you have a question, a partnership idea, or just want to say hi — we read every single message.</p>
+  </div>
+</section>
+
+<!-- ── Contact page body ────────────────────────────── -->
+<section id="contact-page">
+  <div class="wrap">
+    <div class="contact-page-grid">
+
+      <!-- Left: info + FAQ -->
+      <div>
+        <div class="contact-info-cards">
+          <div class="contact-info-card">
+            <div class="contact-info-icon">✉️</div>
+            <div class="contact-info-body">
+              <div class="contact-info-label">Email us</div>
+              <div class="contact-info-value"><a href="mailto:hello@buddy.app">hello@buddy.app</a></div>
+              <div class="contact-info-note">For general enquiries &amp; partnerships</div>
+            </div>
+          </div>
+          <div class="contact-info-card">
+            <div class="contact-info-icon">🛠️</div>
+            <div class="contact-info-body">
+              <div class="contact-info-label">Support</div>
+              <div class="contact-info-value"><a href="mailto:support@buddy.app">support@buddy.app</a></div>
+              <div class="contact-info-note">Technical issues &amp; bug reports</div>
+            </div>
+          </div>
+          <div class="contact-info-card">
+            <div class="contact-info-icon">📞</div>
+            <div class="contact-info-body">
+              <div class="contact-info-label">Phone</div>
+              <div class="contact-info-value">(+44) 07828234986</div>
+              <div class="contact-info-note">Mon – Fri, 9 am – 6 pm GMT</div>
+            </div>
+          </div>
+          <div class="contact-info-card">
+            <div class="contact-info-icon">📍</div>
+            <div class="contact-info-body">
+              <div class="contact-info-label">Office</div>
+              <div class="contact-info-value">Ruislip, London</div>
+              <div class="contact-info-note">By appointment only</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FAQ -->
+        <div class="contact-faq">
+          <div class="contact-faq-title">Common questions</div>
+          <div class="contact-faq-item">
+            <div class="contact-faq-q">When will Buddy launch?</div>
+            <div class="contact-faq-a">We are targeting a public launch later this year. Sign up for early access to be first in line.</div>
+          </div>
+          <div class="contact-faq-item">
+            <div class="contact-faq-q">Is Buddy really 100% private?</div>
+            <div class="contact-faq-a">Yes, most of the functions run entirely on your system — nothing personal ever leaves your device.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: big form card -->
+      <div class="contact-big-card">
+        <div class="contact-big-card-title">Send us a <em>message</em></div>
+        <div class="contact-big-card-sub">We aim to respond to every message within 24 hours on business days.</div>
+
+        <form class="contact-form" id="contact-form-page" onsubmit="handleContactSubmit(event,'contact-form-page','contact-success-page')">
+          <div class="contact-fields-row">
+            <div class="contact-field">
+              <label>First name</label>
+              <input type="text" placeholder="Alex" required/>
+            </div>
+            <div class="contact-field">
+              <label>Last name</label>
+              <input type="text" placeholder="Smith"/>
+            </div>
+          </div>
+          <div class="contact-field">
+            <label>Email address</label>
+            <input type="email" placeholder="you@example.com" required/>
+          </div>
+          <div class="contact-field">
+            <label>Topic</label>
+            <input type="text" placeholder="General / Support / Partnership / Press / Other"/>
+          </div>
+          <div class="contact-field">
+            <label>Message</label>
+            <textarea rows="6" placeholder="Tell us what's on your mind…" required></textarea>
+          </div>
+          <button class="contact-submit" type="submit">Send message →</button>
+        </form>
+
+        <div class="contact-success" id="contact-success-page">
+          <div class="contact-success-icon">📬</div>
+          <div class="contact-success-title">Message sent!</div>
+          <div class="contact-success-sub">Thanks for reaching out. We'll get back to you within 24 hours.</div>
+        </div>
+
+        <div class="contact-page-socials">
+          <a href="#" class="contact-page-social">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.736-8.857L1.254 2.25H8.08l4.26 5.632zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            Twitter / X
+          </a>
+          <a href="#" class="contact-page-social">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+            Discord
+          </a>
+          <a href="#" class="contact-page-social">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            LinkedIn
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ──────────────────────────────────────── -->
+<footer>
+  <div class="wrap footer-inner">
+    <div class="footer-logo">
+      <div class="buddy-face" style="width:22px;height:22px;">
+        <div class="buddy-eye"></div><div class="buddy-eye"></div>
+      </div>
+      Buddy
+    </div>
+    <p class="footer-copy">© 2025 Buddy. All rights reserved.</p>
+    <div class="footer-links">
+      <a href="privacy.html">Privacy</a>
+      <a href="how-it-works.html">How it works</a>
+      <a href="contact.html">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ── Auth modal (shared) ─────────────────────────── -->
+<div id="auth-overlay" style="position:fixed;inset:0;z-index:500;display:none;align-items:center;justify-content:center;background:rgba(5,4,3,0.78);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);animation:overlayFadeIn 0.3s ease both;padding:20px;">
+  <button onclick="closeAuth()" style="position:fixed;top:20px;right:24px;background:none;border:none;color:rgba(255,255,255,.5);font-size:22px;cursor:pointer;z-index:501;padding:4px 8px;line-height:1;transition:color .15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.5)'">✕</button>
+  <div id="auth-content" style="width:100%;max-width:860px;max-height:90vh;overflow-y:auto;border-radius:24px;position:relative;animation:authSlideIn 0.45s cubic-bezier(0.34,1.2,0.64,1) both;display:flex;">
+    <div class="auth-left">
+      <div>
+        <div class="auth-buddy-logo">
+          <div class="auth-buddy-face"><div class="auth-buddy-eye"></div><div class="auth-buddy-eye"></div></div>
+          <span class="auth-buddy-name">Buddy</span>
+        </div>
+        <div class="auth-tagline">Your AI,<br><em>privately</em> at home.</div>
+        <div class="auth-features">
+          <div class="auth-feat"><div class="auth-feat-icon">🛡️</div>Everything stays on your device</div>
+          <div class="auth-feat"><div class="auth-feat-icon">🎙️</div>Wake with your voice, hands-free</div>
+          <div class="auth-feat"><div class="auth-feat-icon">⚡</div>Responds in under a second</div>
+        </div>
+      </div>
+      <div class="auth-left-note">MAC &amp; WINDOWS · COMING SOON</div>
+    </div>
+    <div class="auth-right">
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="auth-tab-signin" onclick="switchTab('signin')">Sign in</button>
+        <button class="auth-tab" id="auth-tab-signup" onclick="switchTab('signup')">Create account</button>
+      </div>
+      <form class="auth-form" id="auth-form-signin" onsubmit="handleAuthSubmit(event,'signin')">
+        <div class="auth-field"><label>Email address</label><input type="email" placeholder="you@example.com" autocomplete="email" required/></div>
+        <div class="auth-field"><label><span>Password</span><a href="#" class="auth-forgot" onclick="return false;">Forgot password?</a></label><input type="password" placeholder="••••••••" autocomplete="current-password" required/></div>
+        <button class="auth-submit" type="submit">Sign in →</button>
+        <div class="auth-divider"><span>or continue with</span></div>
+        <button class="auth-social" type="button"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/><path d="M3.964 10.707A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.039l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.96L3.964 7.293C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>Continue with Google</button>
+        <div class="auth-switch">Don't have an account? <a href="#" onclick="switchTab('signup');return false;">Create one →</a></div>
+      </form>
+      <form class="auth-form" id="auth-form-signup" style="display:none" onsubmit="handleAuthSubmit(event,'signup')">
+        <div class="auth-fields-row"><div class="auth-field"><label>First name</label><input type="text" placeholder="Alex" autocomplete="given-name" required/></div><div class="auth-field"><label>Last name</label><input type="text" placeholder="Smith" autocomplete="family-name"/></div></div>
+        <div class="auth-field"><label>Email address</label><input type="email" placeholder="you@example.com" autocomplete="email" required/></div>
+        <div class="auth-field"><label>Password</label><input type="password" placeholder="Create a password (8+ chars)" autocomplete="new-password" required minlength="8"/></div>
+        <div class="auth-checkbox-row"><input type="checkbox" id="auth-ea-check" checked/><label for="auth-ea-check">Add me to the early access list — I want founding-member pricing</label></div>
+        <button class="auth-submit" type="submit">Create account →</button>
+        <div class="auth-divider"><span>or continue with</span></div>
+        <button class="auth-social" type="button"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/><path d="M3.964 10.707A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.039l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.96L3.964 7.293C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>Continue with Google</button>
+        <div class="auth-switch">Already have an account? <a href="#" onclick="switchTab('signin');return false;">Sign in →</a></div>
+      </form>
+      <div class="auth-success" id="auth-success" style="display:none">
+        <div class="auth-success-icon">🎉</div>
+        <div class="auth-success-title">You're in!</div>
+        <div class="auth-success-sub">Welcome to the founding-member club. We'll be in touch the moment Buddy is ready.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── Nav scroll shadow ── */
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 10);
+}, { passive: true });
+
+/* ── Theme switcher ── */
+function setTheme(mode){
+  const root = document.documentElement;
+  root.removeAttribute('data-theme');
+  if(mode !== 'system') root.setAttribute('data-theme', mode);
+  localStorage.setItem('buddy-theme', mode);
+  updateThemeBtns(mode);
+}
+function updateThemeBtns(mode){
+  ['light','system','dark'].forEach(m => {
+    const mb = document.getElementById('mobile-theme-' + m);
+    if(mb) mb.classList.toggle('active-theme', m === mode);
+  });
+  updateFabIcon(mode);
+}
+function toggleThemeFab(){document.getElementById('theme-fab').classList.toggle('open')}
+function collapseFab(){document.getElementById('theme-fab').classList.remove('open')}
+function updateFabIcon(t){
+  const icons={light:'☀️',system:'💻',dark:'🌙'};
+  const el=document.getElementById('theme-fab-icon');
+  if(el) el.textContent=icons[t]||'💻';
+  document.querySelectorAll('.theme-fab-opt').forEach(b=>b.classList.toggle('active',b.dataset.theme===t));
+}
+window.addEventListener('scroll',collapseFab,{passive:true});
+(function(){
+  const saved = localStorage.getItem('buddy-theme') || 'system';
+  updateThemeBtns(saved);
+})();
+
+/* ── Mobile nav ── */
+function toggleMobileNav() {
+  const drawer = document.getElementById('mobile-nav-drawer');
+  const backdrop = document.getElementById('mobile-nav-backdrop');
+  const btn = document.getElementById('nav-hamburger');
+  if (drawer.classList.contains('open')) {
+    closeMobileNav();
+  } else {
+    drawer.classList.add('open');
+    backdrop.classList.add('open');
+    btn.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+}
+function closeMobileNav() {
+  document.getElementById('mobile-nav-drawer').classList.remove('open');
+  document.getElementById('mobile-nav-backdrop').classList.remove('open');
+  document.getElementById('nav-hamburger').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+/* ── Auth modal ── */
+function openAuth(tab) {
+  closeMobileNav();
+  const overlay = document.getElementById('auth-overlay');
+  overlay.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => { switchTab(tab || 'signup'); }, 50);
+}
+function closeAuth() {
+  const overlay = document.getElementById('auth-overlay');
+  overlay.style.opacity = '0';
+  overlay.style.transition = 'opacity 0.25s ease';
+  setTimeout(() => {
+    overlay.style.display = 'none';
+    overlay.style.opacity = '';
+    overlay.style.transition = '';
+    document.body.style.overflow = '';
+  }, 250);
+}
+function switchTab(tab) {
+  ['signin','signup'].forEach(k => {
+    const t = document.getElementById('auth-tab-' + k);
+    const f = document.getElementById('auth-form-' + k);
+    if(t) t.classList.toggle('active', k === tab);
+    if(f) f.style.display = k === tab ? 'flex' : 'none';
+  });
+  const succ = document.getElementById('auth-success');
+  if(succ) succ.style.display = 'none';
+}
+function handleAuthSubmit(e, mode) {
+  e.preventDefault();
+  const form = document.getElementById('auth-form-' + mode);
+  if(form) form.style.display = 'none';
+  const succ = document.getElementById('auth-success');
+  if(succ) succ.style.display = 'flex';
+}
+document.getElementById('auth-overlay').addEventListener('click', function(e) {
+  if(e.target === this) closeAuth();
+});
+document.addEventListener('keydown', function(e) {
+  if(e.key === 'Escape') closeAuth();
+});
+
+/* ── Contact form ── */
+function handleContactSubmit(e, formId, successId) {
+  e.preventDefault();
+  document.getElementById(formId).style.display = 'none';
+  document.getElementById(successId).classList.add('show');
+}
+
+/* ── Scroll reveal ── */
+const revealObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); revealObs.unobserve(e.target); }});
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+/* ── Active nav link ── */
+(function(){
+  var page = window.location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.nav-links a, .mobile-nav-links a').forEach(function(a){
+    a.classList.remove('active');
+    var href = a.getAttribute('href') || '';
+    if(href.startsWith('#')) return;
+    var file = href.split('#')[0].split('/').pop() || 'index.html';
+    if(file === page) a.classList.add('active');
+  });
+})();
+</script>
+</body>
+</html>
